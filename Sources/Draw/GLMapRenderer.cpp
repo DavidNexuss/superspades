@@ -19,23 +19,36 @@
  */
 
 #include "GLMapRenderer.h"
-#include <Client/GameMap.h>
-#include <Core/Debug.h>
-#include <Core/Settings.h>
 #include "GLDynamicLightShader.h"
 #include "GLImage.h"
 #include "GLMapChunk.h"
 #include "GLMapShadowRenderer.h"
 #include "GLProfiler.h"
 #include "GLProgram.h"
-#include "GLProgram.h"
 #include "GLProgramAttribute.h"
 #include "GLProgramUniform.h"
 #include "GLRenderer.h"
 #include "GLShadowShader.h"
 #include "IGLDevice.h"
+#include <Client/GameMap.h>
+#include <Core/Debug.h>
+#include <Core/Settings.h>
+#include <ScriptBindings/IBlockSkin.h>
+#include <ScriptBindings/IGrenadeSkin.h>
+#include <ScriptBindings/ISpadeSkin.h>
+#include <ScriptBindings/IThirdPersonToolSkin.h>
+#include <ScriptBindings/IToolSkin.h>
+#include <ScriptBindings/IViewToolSkin.h>
+#include <ScriptBindings/IWeaponSkin.h>
+#include <ScriptBindings/ScriptFunction.h>
+#include <string>
 
+DEFINE_SPADES_SETTING(voxel_renderdistance, "256");
 namespace spades {
+
+	int getRenderDistance() {
+		return std::stoi(voxel_renderdistance);
+	}
 	namespace draw {
 		void GLMapRenderer::PreloadShaders(spades::draw::GLRenderer *renderer) {
 			if (renderer->GetSettings().r_physicalLighting)
@@ -126,7 +139,7 @@ namespace spades {
 		void GLMapRenderer::RealizeChunks(spades::Vector3 eye) {
 			SPADES_MARK_FUNCTION();
 
-			float cullDistance = 128.f;
+			float cullDistance = float(getRenderDistance() * 2.0);
 			float releaseDistance = 160.f;
 			for (int i = 0; i < numChunks; i++) {
 				float dist = chunks[i]->DistanceFromEye(eye);
@@ -147,7 +160,7 @@ namespace spades {
 
 		void GLMapRenderer::Prerender() {
 			SPADES_MARK_FUNCTION();
-			//depth-only pass
+			// depth-only pass
 
 			GLProfiler::Context profiler(renderer->GetGLProfiler(), "Map");
 			Vector3 eye = renderer->GetSceneDef().viewOrigin;
@@ -169,7 +182,7 @@ namespace spades {
 			int cy = (int)floorf(eye.y) / GLMapChunk::Size;
 			int cz = (int)floorf(eye.z) / GLMapChunk::Size;
 			DrawColumnDepth(cx, cy, cz, eye);
-			for (int dist = 1; dist <= 128 / GLMapChunk::Size; dist++) {
+			for (int dist = 1; dist <= getRenderDistance() / GLMapChunk::Size; dist++) {
 				for (int x = cx - dist; x <= cx + dist; x++) {
 					DrawColumnDepth(x, cy + dist, cz, eye);
 					DrawColumnDepth(x, cy - dist, cz, eye);
@@ -180,10 +193,8 @@ namespace spades {
 				}
 			}
 
-
 			device->EnableVertexAttribArray(positionAttribute(), false);
 			device->ColorMask(true, true, true, true);
-
 		}
 
 		void GLMapRenderer::RenderSunlightPass() {
@@ -196,7 +207,7 @@ namespace spades {
 			// draw back face to avoid cheating.
 			// without this, players can see through blocks by
 			// covering themselves by ones.
-			RenderBackface();
+			// RenderBackface();
 
 			device->ActiveTexture(0);
 			aoImage->Bind(IGLDevice::Texture2D);
@@ -273,15 +284,16 @@ namespace spades {
 			const auto &viewOrigin = renderer->GetSceneDef().viewOrigin;
 			viewOriginVector.SetValue(viewOrigin.x, viewOrigin.y, viewOrigin.z);
 
-			//RealizeChunks(eye); // should already be realized from the prepass
-			//TODO maybe add some way of checking if the chunks have been realized for the current eye? Probably just a bool called "alreadyrealized" that gets checked in RealizeChunks
+			// RealizeChunks(eye); // should already be realized from the prepass
+			// TODO maybe add some way of checking if the chunks have been realized for the current
+			// eye? Probably just a bool called "alreadyrealized" that gets checked in RealizeChunks
 
 			// draw from nearest to farthest
 			int cx = (int)floorf(eye.x) / GLMapChunk::Size;
 			int cy = (int)floorf(eye.y) / GLMapChunk::Size;
 			int cz = (int)floorf(eye.z) / GLMapChunk::Size;
 			DrawColumnSunlight(cx, cy, cz, eye);
-			for (int dist = 1; dist <= 128 / GLMapChunk::Size; dist++) {
+			for (int dist = 1; dist <= getRenderDistance() / GLMapChunk::Size; dist++) {
 				for (int x = cx - dist; x <= cx + dist; x++) {
 					DrawColumnSunlight(x, cy + dist, cz, eye);
 					DrawColumnSunlight(x, cy - dist, cz, eye);
@@ -359,7 +371,7 @@ namespace spades {
 			const auto &viewOrigin = renderer->GetSceneDef().viewOrigin;
 			viewOriginVector.SetValue(viewOrigin.x, viewOrigin.y, viewOrigin.z);
 
-			//RealizeChunks(eye); // should already be realized from the prepass
+			// RealizeChunks(eye); // should already be realized from the prepass
 
 			// draw from nearest to farthest
 			int cx = (int)floorf(eye.x) / GLMapChunk::Size;
@@ -369,7 +381,7 @@ namespace spades {
 			// TODO: optimize call
 			//       ex. don't call a chunk'r render method if
 			//           no dlight lights it
-			for (int dist = 1; dist <= 128 / GLMapChunk::Size; dist++) {
+			for (int dist = 1; dist <= getRenderDistance() / GLMapChunk::Size; dist++) {
 				for (int x = cx - dist; x <= cx + dist; x++) {
 					DrawColumnDLight(x, cy + dist, cz, eye, lights);
 					DrawColumnDLight(x, cy - dist, cz, eye, lights);
@@ -518,5 +530,5 @@ namespace spades {
 
 			device->Enable(IGLDevice::CullFace, true);
 		}
-	}
-}
+	} // namespace draw
+} // namespace spades

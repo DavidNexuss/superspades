@@ -23,10 +23,6 @@
 
 #include <kiss_fft130/kiss_fft.h>
 
-#include <Client/GameMap.h>
-#include <Core/ConcurrentDispatch.h>
-#include <Core/Debug.h>
-#include <Core/Settings.h>
 #include "GLFramebufferManager.h"
 #include "GLImage.h"
 #include "GLProfiler.h"
@@ -37,8 +33,13 @@
 #include "GLShadowShader.h"
 #include "GLWaterRenderer.h"
 #include "IGLDevice.h"
+#include <Client/GameMap.h>
+#include <Core/ConcurrentDispatch.h>
+#include <Core/Debug.h>
+#include <Core/Settings.h>
 
 namespace spades {
+	extern int getRenderDistance();
 	namespace draw {
 
 #pragma mark - Wave Tank Simulation
@@ -422,7 +423,7 @@ namespace spades {
 				int count = (int)floorf(dt * 600.f);
 				if (count > 400)
 					count = 400;
-				
+
 				for (int i = 0; i < count; i++) {
 					int ox = SampleRandomInt(0, size - 3);
 					int oy = SampleRandomInt(0, size - 3);
@@ -513,9 +514,7 @@ namespace spades {
 			device->TexSubImage2D(IGLDevice::Texture2D, 0, 0, 0, w, h, IGLDevice::BGRA,
 			                      IGLDevice::UnsignedByte, bitmap.data());
 
-
 			size_t numLayers = ((int)settings.r_water >= 2) ? 3 : 1;
-
 
 			// create wave tank simlation
 			for (size_t i = 0; i < numLayers; i++) {
@@ -525,7 +524,7 @@ namespace spades {
 					waveTanks.push_back(new FFTWaveTank<7>());
 				}
 			}
-			
+
 			// create heightmap texture
 			waveTexture = device->GenTexture();
 			if (numLayers == 1) {
@@ -548,8 +547,9 @@ namespace spades {
 			} else {
 				device->BindTexture(IGLDevice::Texture2DArray, waveTexture);
 				device->TexImage3D(IGLDevice::Texture2DArray, 0, IGLDevice::RGBA8,
-				                   waveTanks[0]->GetSize(), waveTanks[0]->GetSize(), static_cast<IGLDevice::Sizei>(numLayers), 0,
-				                   IGLDevice::BGRA, IGLDevice::UnsignedByte, NULL);
+				                   waveTanks[0]->GetSize(), waveTanks[0]->GetSize(),
+				                   static_cast<IGLDevice::Sizei>(numLayers), 0, IGLDevice::BGRA,
+				                   IGLDevice::UnsignedByte, NULL);
 				device->TexParamater(IGLDevice::Texture2DArray, IGLDevice::TextureMagFilter,
 				                     IGLDevice::Linear);
 				device->TexParamater(IGLDevice::Texture2DArray, IGLDevice::TextureMinFilter,
@@ -578,7 +578,7 @@ namespace spades {
 
 			int meshSize = 16;
 			if ((int)settings.r_water >= 2)
-				meshSize = 128;
+				meshSize = getRenderDistance();
 			float meshSizeInv = 1.f / (float)meshSize;
 			for (int y = -meshSize; y <= meshSize; y++) {
 				for (int x = -meshSize; x <= meshSize; x++) {
@@ -664,7 +664,7 @@ namespace spades {
 
 			const client::SceneDefinition &def = renderer->GetSceneDef();
 			float waterLevel = 63.f;
-			float waterRange = 128.f;
+			float waterRange = float(getRenderDistance());
 
 			Matrix4 mat = Matrix4::Translate(def.viewOrigin.x, def.viewOrigin.y, waterLevel);
 			mat = mat * Matrix4::Scale(waterRange, waterRange, 1.f);
@@ -850,7 +850,8 @@ namespace spades {
 
 			// update wavetank simulation
 			{
-				GLProfiler::Context profiler(renderer->GetGLProfiler(), "Waiting for Simulation To Done");
+				GLProfiler::Context profiler(renderer->GetGLProfiler(),
+				                             "Waiting for Simulation To Done");
 				for (size_t i = 0; i < waveTanks.size(); i++) {
 					waveTanks[i]->Join();
 				}
@@ -867,10 +868,10 @@ namespace spades {
 					} else {
 						device->BindTexture(IGLDevice::Texture2DArray, waveTexture);
 						for (size_t i = 0; i < waveTanks.size(); i++) {
-							device->TexSubImage3D(IGLDevice::Texture2DArray, 0, 0, 0, static_cast<IGLDevice::Sizei>(i),
-												  waveTanks[i]->GetSize(), waveTanks[i]->GetSize(), 1,
-												  IGLDevice::BGRA, IGLDevice::UnsignedByte,
-												  waveTanks[i]->GetBitmap());
+							device->TexSubImage3D(
+							  IGLDevice::Texture2DArray, 0, 0, 0, static_cast<IGLDevice::Sizei>(i),
+							  waveTanks[i]->GetSize(), waveTanks[i]->GetSize(), 1, IGLDevice::BGRA,
+							  IGLDevice::UnsignedByte, waveTanks[i]->GetBitmap());
 						}
 					}
 				}
@@ -895,7 +896,8 @@ namespace spades {
 			}
 
 			{
-				GLProfiler::Context profiler(renderer->GetGLProfiler(), "Upload Water Color Texture");
+				GLProfiler::Context profiler(renderer->GetGLProfiler(),
+				                             "Upload Water Color Texture");
 				device->BindTexture(IGLDevice::Texture2D, texture);
 				bool fullUpdate = true;
 				for (size_t i = 0; i < updateBitmap.size(); i++) {
@@ -985,5 +987,5 @@ namespace spades {
 				return;
 			MarkUpdate(x, y);
 		}
-	}
-}
+	} // namespace draw
+} // namespace spades
