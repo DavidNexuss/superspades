@@ -27,8 +27,8 @@
 #include "IAudioChunk.h"
 #include "IAudioDevice.h"
 
-#include "ClientUI.h"
 #include "ChatWindow.h"
+#include "ClientUI.h"
 #include "Corpse.h"
 #include "LimboView.h"
 #include "MapView.h"
@@ -67,6 +67,7 @@ DEFINE_SPADES_SETTING(cg_keyCrouch, "Control");
 DEFINE_SPADES_SETTING(cg_keySprint, "Shift");
 DEFINE_SPADES_SETTING(cg_keySneak, "v");
 
+DEFINE_SPADES_SETTING(cg_keyMedkit, "q");
 DEFINE_SPADES_SETTING(cg_keyCaptureColor, "e");
 DEFINE_SPADES_SETTING(cg_keyGlobalChat, "t");
 DEFINE_SPADES_SETTING(cg_keyTeamChat, "y");
@@ -90,9 +91,13 @@ DEFINE_SPADES_SETTING(cg_keyAutoFocus, "MiddleMouseButton");
 namespace spades {
 	namespace client {
 
-		bool Client::WantsToBeClosed() { return readyToClose; }
+		bool Client::WantsToBeClosed() {
+			return readyToClose;
+		}
 
-		void Client::Closing() { SPADES_MARK_FUNCTION(); }
+		void Client::Closing() {
+			SPADES_MARK_FUNCTION();
+		}
 
 		bool Client::NeedsAbsoluteMouseCoordinate() {
 			SPADES_MARK_FUNCTION();
@@ -521,6 +526,9 @@ namespace spades {
 						// global chat
 						scriptedUI->EnterGlobalChatWindow();
 						scriptedUI->setIgnored(name);
+					} else if (CheckKey(cg_keyMedkit, name) && down) {
+						scriptedUI->SendChat("/m", true);
+
 					} else if (CheckKey(cg_keyTeamChat, name) && down) {
 						// team chat
 						scriptedUI->EnterTeamChatWindow();
@@ -563,7 +571,8 @@ namespace spades {
 						TakeMapShot();
 					} else if (CheckKey(cg_keyFlashlight, name) && down) {
 						// spectators and dead players should not be able to toggle the flashlight
-						if (world->GetLocalPlayer()->IsSpectator() || !world->GetLocalPlayer()->IsAlive())
+						if (world->GetLocalPlayer()->IsSpectator() ||
+						    !world->GetLocalPlayer()->IsAlive())
 							return;
 						flashlightOn = !flashlightOn;
 						flashlightOnTime = time;
@@ -626,5 +635,5 @@ namespace spades {
 				}
 			}
 		}
-	}
-}
+	} // namespace client
+} // namespace spades

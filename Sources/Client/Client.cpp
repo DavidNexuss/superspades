@@ -65,7 +65,7 @@ SPADES_SETTING(cg_playerName);
 
 namespace spades {
 	namespace client {
-        
+
 		Client::Client(IRenderer *r, IAudioDevice *audioDev, const ServerAddress &host,
 		               FontManager *fontManager)
 		    : playerName(cg_playerName.operator std::string().substr(0, 15)),
@@ -74,11 +74,8 @@ namespace spades {
 		      renderer(r),
 		      audioDevice(audioDev),
 
-
 		      time(0.f),
 		      readyToClose(false),
-
-
 
 		      worldSubFrame(0.f),
 		      frameToRendererInit(5),
@@ -697,8 +694,8 @@ namespace spades {
 
 			bool localPlayerIsSpectator = localPlayer.IsSpectator();
 
-			int nextId = FollowsNonLocalPlayer(GetCameraMode()) ? followedPlayerId :
-				world->GetLocalPlayerIndex();
+			int nextId = FollowsNonLocalPlayer(GetCameraMode()) ? followedPlayerId
+			                                                    : world->GetLocalPlayerIndex();
 			do {
 				reverse ? --nextId : ++nextId;
 
@@ -737,5 +734,5 @@ namespace spades {
 				followCameraState.enabled = true;
 			}
 		}
-	}
-}
+	} // namespace client
+} // namespace spades

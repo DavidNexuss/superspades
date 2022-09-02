@@ -44,8 +44,6 @@ namespace spades {
 			Client *client;
 			std::string ignoreInput;
 
-			void SendChat(const std::string &, bool isGlobal);
-
 			void AlertNotice(const std::string &);
 			void AlertWarning(const std::string &);
 			void AlertError(const std::string &);
@@ -60,6 +58,7 @@ namespace spades {
 			client::IRenderer *GetRenderer() { return &*renderer; }
 			client::IAudioDevice *GetAudioDevice() { return &*audioDevice; }
 
+			void SendChat(const std::string &, bool isGlobal);
 			void MouseEvent(float x, float y);
 			void WheelEvent(float x, float y);
 			void KeyEvent(const std::string &, bool down);
@@ -89,5 +88,5 @@ namespace spades {
 			void setIgnored(const std::string &key);
 		};
 		;
-	}
-}
+	} // namespace client
+} // namespace spades
