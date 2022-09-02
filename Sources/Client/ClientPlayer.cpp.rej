@@ -1,0 +1,76 @@
+--- ClientPlayer.cpp
++++ ClientPlayer.cpp
+@@ -123,11 +125,11 @@ namespace spades {
+ 
+ 			void RenderModel(IModel &model, const ModelRenderParam &_p) {
+ 				ModelRenderParam p = _p;
+-
+-				if (p.depthHack && !allowDepthHack) {
+-					OnProhibitedAction();
+-					return;
+-				}
++				/*
++				            if (p.depthHack && !allowDepthHack) {
++				                OnProhibitedAction();
++				                return;
++				            } */
+ 
+ 				// Disable depth hack when `cg_debugToolSkinAnchors` is set
+ 				// so that the drawn debug lines intersect with the weapon model
+@@ -708,8 +710,7 @@ namespace spades {
+ 				float sp = 1.f - aimDownState;
+ 				sp *= .3f;
+ 				sp *= std::min(1.f, p.GetVelocity().GetLength() * 5.f);
+-				viewWeaponOffset.x +=
+-				  sinf(p.GetWalkAnimationProgress() * M_PI * 2.f) * 0.013f * sp;
++				viewWeaponOffset.x += sinf(p.GetWalkAnimationProgress() * M_PI * 2.f) * 0.013f * sp;
+ 				float vl = cosf(p.GetWalkAnimationProgress() * M_PI * 2.f);
+ 				vl *= vl;
+ 				viewWeaponOffset.z += vl * 0.018f * sp;
+@@ -1047,9 +1048,10 @@ namespace spades {
+ 			}
+ 
+ 			float distancePowered = (p.GetOrigin() - lastSceneDef.viewOrigin).GetPoweredLength();
+-			if (distancePowered > 140.f * 140.f) {
+-				return;
+-			}
++			/*
++			      if (distancePowered > 140.f * 140.f) {
++			          return;
++			      } */
+ 
+ 			if (!ShouldRenderInThirdPersonView()) {
+ 				AddToSceneFirstPersonView();
+@@ -1125,7 +1127,8 @@ namespace spades {
+ 				// The skin should return a legit position. Return the default
+ 				// position if it didn't.
+ 				Vector3 origin = player.GetOrigin();
+-				AABB3 clip = AABB3(origin - Vector3(2.f, 2.f, 4.f), origin + Vector3(2.f, 2.f, 2.f));
++				AABB3 clip =
++				  AABB3(origin - Vector3(2.f, 2.f, 4.f), origin + Vector3(2.f, 2.f, 2.f));
+ 				if (clip.Contains(muzzle)) {
+ 					return muzzle;
+ 				}
+@@ -1151,7 +1154,8 @@ namespace spades {
+ 				// The skin should return a legit position. Return the default
+ 				// position if it didn't.
+ 				Vector3 origin = player.GetOrigin();
+-				AABB3 clip = AABB3(origin - Vector3(2.f, 2.f, 4.f), origin + Vector3(2.f, 2.f, 2.f));
++				AABB3 clip =
++				  AABB3(origin - Vector3(2.f, 2.f, 4.f), origin + Vector3(2.f, 2.f, 2.f));
+ 				if (clip.Contains(CaseEject)) {
+ 					return CaseEject;
+ 				}
+@@ -1334,9 +1338,9 @@ namespace spades {
+ 						vel = p.GetFront() * 0.5f + p.GetRight() + p.GetUp() * 0.2f;
+ 						switch (p.GetWeapon().GetWeaponType()) {
+ 							case SMG_WEAPON:
+-								vel -= p.GetFront() * (0.6f + SampleRandomFloat()/5);
+-								vel += p.GetRight() * (SampleRandomFloat()/5 - 0.1f);
+-								vel += p.GetUp() * (SampleRandomFloat()/5 - 0.1f);
++								vel -= p.GetFront() * (0.6f + SampleRandomFloat() / 5);
++								vel += p.GetRight() * (SampleRandomFloat() / 5 - 0.1f);
++								vel += p.GetUp() * (SampleRandomFloat() / 5 - 0.1f);
+ 								break;
+ 							case SHOTGUN_WEAPON: vel *= .5f; break;
+ 							default: break;
