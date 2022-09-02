@@ -1,3 +1,15 @@
+# SuperSpades
+This is a modified openspades client with fog hack and an option to increase world render distance (by default x2 official). (Fork of openspades version 0.1.3)
+
+To change render distance, go to options and change *voxel_renderdistance* to whatever you like.
+
+Demo video: https://www.youtube.com/watch?v=cEGUr-1cwWg
+
+Everything else was made by yyt and the community of openspades:
+https://github.com/yvt/openspades
+
+The following is the Readme of the stable 0.1.3 version of openspades.
+
 # OpenSpades [![Build status](https://travis-ci.org/yvt/openspades.svg?branch=master)](https://travis-ci.org/yvt/openspades) [![All releases downloads](https://img.shields.io/github/downloads/yvt/openspades/total.svg)](https://github.com/yvt/openspades/releases) [![Latest release](https://img.shields.io/github/release/yvt/openspades.svg)](https://github.com/yvt/openspades/releases) [![Crowdin](https://d322cqt584bo4o.cloudfront.net/openspades/localized.svg)](https://crowdin.com/project/openspades)
 
 
