@@ -21,9 +21,6 @@
 #include <algorithm>
 #include <cstddef>
 
-#include <Client/GameMap.h>
-#include <Core/Debug.h>
-#include <Core/Settings.h>
 #include "GLDynamicLightShader.h"
 #include "GLMapChunk.h"
 #include "GLMapRenderer.h"
@@ -32,6 +29,9 @@
 #include "GLRenderer.h"
 #include "IGLDevice.h"
 #include <AngelScript/include/angelscript.h> // for asOFFSET. somehow `offsetof` fails on gcc-4.8
+#include <Client/GameMap.h>
+#include <Core/Debug.h>
+#include <Core/Settings.h>
 
 namespace spades {
 	namespace draw {
@@ -57,7 +57,9 @@ namespace spades {
 			iBuffer = 0;
 		}
 
-		GLMapChunk::~GLMapChunk() { SetRealized(false); }
+		GLMapChunk::~GLMapChunk() {
+			SetRealized(false);
+		}
 
 		void GLMapChunk::SetRealized(bool b) {
 			SPADES_MARK_FUNCTION_DEBUG();
@@ -534,5 +536,5 @@ namespace spades {
 			// return std::max(diff.GetLength() - radius, 0.f);
 			return std::max(dist - ((float)Size * .5f), 0.f);
 		}
-	}
-}
+	} // namespace draw
+} // namespace spades

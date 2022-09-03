@@ -71,7 +71,7 @@ DEFINE_SPADES_SETTING(cl_showStartupWindow, "1");
 // windows.h must be included before DbgHelp.h and shlobj.h.
 #include <windows.h>
 
-#include <DbgHelp.h>
+#include <dbghelp.h>
 #include <shlobj.h>
 
 #define strncasecmp(x, y, z) _strnicmp(x, y, z)
@@ -154,24 +154,26 @@ namespace {
 				          "Something went horribly wrong, please send the file \n%s\nfor analysis.",
 				          fullBuf);
 			} else {
-				sprintf_s(buf, "Something went horribly wrong,\ni even failed to store information "
-				               "about the problem... (0x%08x)",
+				sprintf_s(buf,
+				          "Something went horribly wrong,\ni even failed to store information "
+				          "about the problem... (0x%08x)",
 				          lpEx ? lpEx->ExceptionRecord->ExceptionCode : 0xffffffff);
 			}
 		} else {
-			sprintf_s(buf, "Something went horribly wrong,\ni even failed to retrieve information "
-			               "about the problem... (0x%08x)",
+			sprintf_s(buf,
+			          "Something went horribly wrong,\ni even failed to retrieve information "
+			          "about the problem... (0x%08x)",
 			          lpEx ? lpEx->ExceptionRecord->ExceptionCode : 0xffffffff);
 		}
 		MessageBoxA(NULL, buf, "Oops, we crashed...", MB_OK | MB_ICONERROR);
 		ExitProcess(-1);
 		// return EXCEPTION_EXECUTE_HANDLER;
 	}
-}
+} // namespace
 #else
 namespace {
 	class ThreadQuantumSetter {};
-}
+} // namespace
 #endif
 
 namespace {
@@ -218,7 +220,7 @@ namespace {
 
 		return 0;
 	}
-}
+} // namespace
 
 namespace spades {
 	std::string g_userResourceDirectory;
@@ -229,7 +231,7 @@ namespace spades {
 
 		protected:
 			spades::gui::View *CreateView(spades::client::IRenderer *renderer,
-			                                      spades::client::IAudioDevice *audio) override {
+			                              spades::client::IAudioDevice *audio) override {
 				Handle<client::FontManager> fontManager(new client::FontManager(renderer), false);
 				return new spades::client::Client(renderer, audio, addr, fontManager);
 			}
@@ -244,7 +246,7 @@ namespace spades {
 		class ConcreteRunner : public spades::gui::Runner {
 		protected:
 			spades::gui::View *CreateView(spades::client::IRenderer *renderer,
-			                                      spades::client::IAudioDevice *audio) override {
+			                              spades::client::IAudioDevice *audio) override {
 				Handle<client::FontManager> fontManager(new client::FontManager(renderer), false);
 				return new spades::gui::MainScreen(renderer, audio, fontManager);
 			}
@@ -254,7 +256,7 @@ namespace spades {
 		ConcreteRunner runner;
 		runner.RunProtected();
 	}
-}
+} // namespace spades
 
 static uLong computeCrc32ForStream(spades::IStream *s) {
 	uLong crc = crc32(0L, Z_NULL, 0);
@@ -279,6 +281,11 @@ static std::string Utf8FromWString(const wchar_t *ws) {
 	return ss;
 }
 #endif
+
+int main(int argc, char **argv);
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd) {
+	main(0, nullptr);
+}
 
 int main(int argc, char **argv) {
 #ifdef WIN32
@@ -334,7 +341,8 @@ int main(int argc, char **argv) {
 		std::wstring userAppDir = appdir + L"UserResources";
 
 		DWORD userAppDirAttrib = GetFileAttributesW(userAppDir.c_str());
-		if (userAppDirAttrib != INVALID_FILE_ATTRIBUTES && (userAppDirAttrib & FILE_ATTRIBUTE_DIRECTORY)) {
+		if (userAppDirAttrib != INVALID_FILE_ATTRIBUTES &&
+		    (userAppDirAttrib & FILE_ATTRIBUTE_DIRECTORY)) {
 			SPLog("UserResources found - switching to 'portable' mode");
 
 			spades::FileManager::AddFileSystem(
@@ -630,8 +638,9 @@ int main(int argc, char **argv) {
 		}
 
 		std::string msg = ex.what();
-		msg = _Tr("Main", "A serious error caused OpenSpades to stop working:\n\n{0}\n\nSee "
-		                  "SystemMessages.log for more details.",
+		msg = _Tr("Main",
+		          "A serious error caused OpenSpades to stop working:\n\n{0}\n\nSee "
+		          "SystemMessages.log for more details.",
 		          msg);
 
 		SPLog("[!] Terminating due to the fatal error: %s", ex.what());
