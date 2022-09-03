@@ -70,3 +70,6 @@ echo -e "\t cp superspades.exe dist"
 echo -e "\t cp lib64/* dist"
 echo -e "\t cp -r ../Release/build/Resources dist/"
 echo -e "\t rm -rf dist/*.a"
+
+rm -f *.dat
+rm -f *.old
