@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 CCOPTS="-I Sources -m32 -I /usr/x86_64-w64-mingw32/include/SDL2/ -I . -I Sources/json/include -I Sources/AngelScript/include -I Sources/ENet/include -I /usr/x86_64-w64-mingw32/include/freetype2 -I /usr/x86_64-w64-mingw32/include/opus"
 LDOPTS="lib64/SDL2_main.a -Llib64 -l:SDL2.dll lib64/SDL2_image.a -l:glew32.dll -l:OpenAL32.dll -l:opengl32.dll -l:libcurl64.dll -l:libopus-0.dll -l:libogg_64.dll -l:libTIFF64.dll -l:zlib.dll -l:freetype.dll -lwinmm -lws2_32 -static-libgcc -static-libstdc++ lib64/opusfile64.a lib64/libwinpthread.a"
