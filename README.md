@@ -5,6 +5,17 @@ To change render distance, go to options and change *voxel_renderdistance* to wh
 
 Demo video: https://www.youtube.com/watch?v=cEGUr-1cwWg
 
+## List of changes
+
+* Removes fog
+* Adds a variable to change render distance
+* Duplicates render distance
+* Adds keybinding to issue medkit command
+
+### New variables
+* **voxel_renderdistance**: World render distance (256 by deafault)
+* **cg_keyMedkit**: keybinding to issue medkit command (q by deafault)
+
 Everything else was made by yyt and the community of openspades:
 https://github.com/yvt/openspades
 
