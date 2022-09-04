@@ -41,8 +41,8 @@
 #include <ScriptBindings/IViewToolSkin.h>
 #include <ScriptBindings/IWeaponSkin.h>
 #include <ScriptBindings/ScriptFunction.h>
+#include <iostream>
 #include <string>
-
 DEFINE_SPADES_SETTING(voxel_renderdistance, "256");
 namespace spades {
 
@@ -181,6 +181,8 @@ namespace spades {
 			int cx = (int)floorf(eye.x) / GLMapChunk::Size;
 			int cy = (int)floorf(eye.y) / GLMapChunk::Size;
 			int cz = (int)floorf(eye.z) / GLMapChunk::Size;
+
+			GLMapChunk::stat_occludedCount = 0;
 			DrawColumnDepth(cx, cy, cz, eye);
 			for (int dist = 1; dist <= getRenderDistance() / GLMapChunk::Size; dist++) {
 				for (int x = cx - dist; x <= cx + dist; x++) {
@@ -192,6 +194,7 @@ namespace spades {
 					DrawColumnDepth(cx - dist, y, cz, eye);
 				}
 			}
+			// std::cerr << "Occluded " << GLMapChunk::stat_occludedCount << std::endl;
 
 			device->EnableVertexAttribArray(positionAttribute(), false);
 			device->ColorMask(true, true, true, true);

@@ -32,8 +32,11 @@
 #include <Client/GameMap.h>
 #include <Core/Debug.h>
 #include <Core/Settings.h>
+#include <iostream>
 namespace spades {
 	namespace draw {
+
+		int GLMapChunk::stat_occludedCount = 0;
 		GLMapChunk::GLMapChunk(spades::draw::GLMapRenderer *r, client::GameMap *mp, int cx, int cy,
 		                       int cz) {
 			SPADES_MARK_FUNCTION();
@@ -232,6 +235,14 @@ namespace spades {
 			int rchunkZ = chunkZ * Size;
 
 			int x, y, z;
+
+			fillCount[0] = 0;
+			fillCount[1] = 0;
+			fillCount[2] = 0;
+			fillCount[3] = 0;
+			fillCount[4] = 0;
+			fillCount[5] = 0;
+
 			for (x = 0; x < Size; x++) {
 				for (y = 0; y < Size; y++) {
 					for (z = 0; z < Size; z++) {
@@ -241,6 +252,13 @@ namespace spades {
 
 						if (!IsSolid(xx, yy, zz))
 							continue;
+
+						fillCount[0] += x == 0;
+						fillCount[1] += y == 0;
+						fillCount[2] += z == 0;
+						fillCount[3] += x == (Size - 1);
+						fillCount[4] += y == (Size - 1);
+						fillCount[5] += z == (Size - 1);
 
 						uint32_t col = map->GetColor(xx, yy, zz);
 						// col = 0xffffffff;
@@ -296,6 +314,25 @@ namespace spades {
 			device->BindBuffer(IGLDevice::ArrayBuffer, 0);
 		}
 
+		bool GLMapChunk::IsOccluded() {
+			// FIXME: Variable map size
+			if (chunkX == 0 || chunkY == 0 || chunkZ == 0 || chunkX == (32 - 1) ||
+			    chunkY == (32 - 1) || chunkZ == (32 - 1))
+				return false;
+
+			stat_occludedCount++;
+			if ((renderer->GetChunk(chunkX - 1, chunkY, chunkZ)->fillCount[3] == Size * Size) &&
+			    (renderer->GetChunk(chunkX + 1, chunkY, chunkZ)->fillCount[0] == Size * Size) &&
+			    (renderer->GetChunk(chunkX, chunkY - 1, chunkZ)->fillCount[4] == Size * Size) &&
+			    (renderer->GetChunk(chunkX, chunkY + 1, chunkZ)->fillCount[1] == Size * Size) &&
+			    (renderer->GetChunk(chunkX, chunkY, chunkZ - 1)->fillCount[5] == Size * Size) &&
+			    (renderer->GetChunk(chunkX, chunkY, chunkZ + 1)->fillCount[2] == Size * Size))
+				return true;
+
+			stat_occludedCount--;
+			return false;
+		}
+
 		void GLMapChunk::RenderDepthPass(int cx, int cy) {
 			SPADES_MARK_FUNCTION();
 			Vector3 eye = renderer->renderer->GetSceneDef().viewOrigin;
@@ -306,10 +343,14 @@ namespace spades {
 				Update();
 				needsUpdate = false;
 			}
+
 			if (!buffer) {
 				// empty chunk
 				return;
 			}
+
+			if (IsOccluded())
+				return;
 			AABB3 bx = aabb;
 
 			Vector3 diff = eye - centerPos;
@@ -366,6 +407,9 @@ namespace spades {
 				// empty chunk
 				return;
 			}
+			if (IsOccluded())
+				return;
+
 			AABB3 bx = aabb;
 
 			Vector3 diff = eye - centerPos;
@@ -444,6 +488,9 @@ namespace spades {
 				// empty chunk
 				return;
 			}
+			if (IsOccluded())
+				return;
+
 			AABB3 bx = aabb;
 
 			Vector3 diff = eye - centerPos;

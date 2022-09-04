@@ -51,6 +51,7 @@ namespace spades {
 				uint8_t pad3;
 			};
 
+			int fillCount[6];
 			GLMapRenderer *renderer;
 			IGLDevice *device;
 			client::GameMap *map;
@@ -76,8 +77,10 @@ namespace spades {
 			bool IsSolid(int x, int y, int z);
 
 			void Update();
+			bool IsOccluded();
 
 		public:
+			static int stat_occludedCount;
 			enum { Size = 16, SizeBits = 4 };
 			GLMapChunk(GLMapRenderer *, client::GameMap *mp, int cx, int cy, int cz);
 			~GLMapChunk();

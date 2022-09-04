@@ -28,10 +28,12 @@
 #include <Core/FileManager.h>
 #include <Core/Settings.h>
 #include <Core/Strings.h>
+#include <Draw/GLMapChunk.h>
 
 #include "IAudioChunk.h"
 #include "IAudioDevice.h"
 
+#include "CTFGameMode.h"
 #include "CenterMessageView.h"
 #include "ChatWindow.h"
 #include "ClientPlayer.h"
@@ -41,6 +43,7 @@
 #include "Fonts.h"
 #include "HurtRingView.h"
 #include "IFont.h"
+#include "IGameMode.h"
 #include "ILocalEntity.h"
 #include "LimboView.h"
 #include "MapView.h"
@@ -50,8 +53,6 @@
 #include "SmokeSpriteEntity.h"
 #include "TCProgressView.h"
 #include "Tracer.h"
-#include "IGameMode.h"
-#include "CTFGameMode.h"
 
 #include "GameMap.h"
 #include "Grenade.h"
@@ -103,7 +104,7 @@ namespace spades {
 					return name;
 				}
 			}
-		}
+		} // namespace
 
 		void Client::TakeScreenShot(bool sceneOnly) {
 			SceneDefinition sceneDef = CreateSceneDefinition();
@@ -429,7 +430,7 @@ namespace spades {
 					Handle<IImage> img(renderer->RegisterImage("Gfx/Intel.png"), false);
 
 					// Strobe
-					Vector4 color {1.0f, 1.0f, 1.0f, 1.0f};
+					Vector4 color{1.0f, 1.0f, 1.0f, 1.0f};
 					color *= std::fabs(std::sin(world->GetTime() * 2.0f));
 
 					renderer->SetColorAlphaPremultiplied(color);
@@ -756,8 +757,9 @@ namespace spades {
 			color = Vector4(1.f, 1.f, 1.f, 1.f);
 			color *= fade;
 
-			font->DrawShadow(alertContents, Vector2(pos.x + contentsSize.x - textSize.x - margin,
-			                                        pos.y + (contentsSize.y - textSize.y) * 0.5f),
+			font->DrawShadow(alertContents,
+			                 Vector2(pos.x + contentsSize.x - textSize.x - margin,
+			                         pos.y + (contentsSize.y - textSize.y) * 0.5f),
 			                 1.f, color, Vector4(0.f, 0.f, 0.f, fade * 0.5f));
 		}
 
@@ -894,6 +896,11 @@ namespace spades {
 
 			char buf[256];
 			std::string str;
+			{
+				sprintf(buf, "%d |", spades::draw::GLMapChunk::stat_occludedCount);
+				str += "Occluded: ";
+				str += buf;
+			}
 
 			{
 				auto fps = fpsCounter.GetFps();
@@ -952,5 +959,5 @@ namespace spades {
 
 			DrawStats();
 		}
-	}
-}
+	} // namespace client
+} // namespace spades
