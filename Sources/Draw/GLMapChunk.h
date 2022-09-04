@@ -22,11 +22,11 @@
 
 #include <vector>
 
+#include "GLDynamicLight.h"
+#include "IGLDevice.h"
 #include <Client/GameMap.h>
 #include <Client/IRenderer.h>
 #include <Core/Math.h>
-#include "GLDynamicLight.h"
-#include "IGLDevice.h"
 
 namespace spades {
 	namespace draw {
@@ -88,9 +88,9 @@ namespace spades {
 
 			float DistanceFromEye(const Vector3 &eye);
 
-			void RenderSunlightPass();
-			void RenderDepthPass();
-			void RenderDLightPass(std::vector<GLDynamicLight> lights);
+			void RenderSunlightPass(int cx, int cy);
+			void RenderDepthPass(int cx, int cy);
+			void RenderDLightPass(std::vector<GLDynamicLight> lights, int cx, int cy);
 		};
-	}
-}
+	} // namespace draw
+} // namespace spades

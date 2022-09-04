@@ -29,7 +29,9 @@ namespace spades {
 
 		GLQuadRenderer::~GLQuadRenderer() {}
 
-		void GLQuadRenderer::SetCoordAttributeIndex(IGLDevice::UInteger idx) { attrIndex = idx; }
+		void GLQuadRenderer::SetCoordAttributeIndex(IGLDevice::UInteger idx) {
+			attrIndex = idx;
+		}
 
 		void GLQuadRenderer::Draw() {
 			static const uint8_t vertices[][4] = {{0, 0}, {1, 0}, {1, 1}, {0, 1}};
@@ -39,5 +41,5 @@ namespace spades {
 			device->DrawArrays(IGLDevice::TriangleFan, 0, 4);
 			device->EnableVertexAttribArray(attrIndex, false);
 		}
-	}
-}
+	} // namespace draw
+} // namespace spades

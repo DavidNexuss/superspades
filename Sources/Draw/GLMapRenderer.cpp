@@ -401,30 +401,30 @@ namespace spades {
 		}
 
 		void GLMapRenderer::DrawColumnDepth(int cx, int cy, int cz, spades::Vector3 eye) {
-			cx &= numChunkWidth - 1;
-			cy &= numChunkHeight - 1;
+			int lx = cx & numChunkWidth - 1;
+			int ly = cy & numChunkHeight - 1;
 			for (int z = std::max(cz, 0); z < numChunkDepth; z++)
-				GetChunk(cx, cy, z)->RenderDepthPass();
+				GetChunk(lx, ly, z)->RenderDepthPass(cx, cy);
 			for (int z = std::min(cz - 1, 63); z >= 0; z--)
-				GetChunk(cx, cy, z)->RenderDepthPass();
+				GetChunk(lx, ly, z)->RenderDepthPass(cx, cy);
 		}
 		void GLMapRenderer::DrawColumnSunlight(int cx, int cy, int cz, spades::Vector3 eye) {
-			cx &= numChunkWidth - 1;
-			cy &= numChunkHeight - 1;
+			int lx = cx & numChunkWidth - 1;
+			int ly = cy & numChunkHeight - 1;
 			for (int z = std::max(cz, 0); z < numChunkDepth; z++)
-				GetChunk(cx, cy, z)->RenderSunlightPass();
+				GetChunk(lx, ly, z)->RenderSunlightPass(cx, cy);
 			for (int z = std::min(cz - 1, 63); z >= 0; z--)
-				GetChunk(cx, cy, z)->RenderSunlightPass();
+				GetChunk(lx, ly, z)->RenderSunlightPass(cx, cy);
 		}
 
 		void GLMapRenderer::DrawColumnDLight(int cx, int cy, int cz, spades::Vector3 eye,
 		                                     const std::vector<GLDynamicLight> &lights) {
-			cx &= numChunkWidth - 1;
-			cy &= numChunkHeight - 1;
+			int lx = cx & numChunkWidth - 1;
+			int ly = cy & numChunkHeight - 1;
 			for (int z = std::max(cz, 0); z < numChunkDepth; z++)
-				GetChunk(cx, cy, z)->RenderDLightPass(lights);
+				GetChunk(lx, ly, z)->RenderDLightPass(lights, cx, cy);
 			for (int z = std::min(cz - 1, 63); z >= 0; z--)
-				GetChunk(cx, cy, z)->RenderDLightPass(lights);
+				GetChunk(lx, ly, z)->RenderDLightPass(lights, cx, cy);
 		}
 
 #pragma mark - BackFaceBlock

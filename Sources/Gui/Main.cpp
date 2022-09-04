@@ -282,11 +282,12 @@ static std::string Utf8FromWString(const wchar_t *ws) {
 }
 #endif
 
+#ifdef WIN32
 int main(int argc, char **argv);
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd) {
 	main(0, nullptr);
 }
-
+#endif
 int main(int argc, char **argv) {
 #ifdef WIN32
 	SetUnhandledExceptionFilter(UnhandledExceptionProc);

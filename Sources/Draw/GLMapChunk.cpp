@@ -32,7 +32,6 @@
 #include <Client/GameMap.h>
 #include <Core/Debug.h>
 #include <Core/Settings.h>
-
 namespace spades {
 	namespace draw {
 		GLMapChunk::GLMapChunk(spades::draw::GLMapRenderer *r, client::GameMap *mp, int cx, int cy,
@@ -297,7 +296,7 @@ namespace spades {
 			device->BindBuffer(IGLDevice::ArrayBuffer, 0);
 		}
 
-		void GLMapChunk::RenderDepthPass() {
+		void GLMapChunk::RenderDepthPass(int cx, int cy) {
 			SPADES_MARK_FUNCTION();
 			Vector3 eye = renderer->renderer->GetSceneDef().viewOrigin;
 
@@ -315,15 +314,12 @@ namespace spades {
 
 			Vector3 diff = eye - centerPos;
 			float sx = 0.f, sy = 0.f;
-			// FIXME: variable map size?
-			if (diff.x > 256.f)
-				sx += 512.f;
-			if (diff.y > 256.f)
-				sy += 512.f;
-			if (diff.x < -256.f)
-				sx -= 512.f;
-			if (diff.y < -256.f)
-				sy -= 512.f;
+
+			// FIXME: Variable map size
+			sx += 512.f * (cx / 32);
+			sy += 512.f * (cy / 32);
+			sx += -512.f * (cx < 0);
+			sy += -512.f * (cy < 0);
 
 			bx.min.x += sx;
 			bx.min.y += sy;
@@ -356,7 +352,7 @@ namespace spades {
 			                     IGLDevice::UnsignedShort, NULL);
 			device->BindBuffer(IGLDevice::ElementArrayBuffer, 0);
 		}
-		void GLMapChunk::RenderSunlightPass() {
+		void GLMapChunk::RenderSunlightPass(int cx, int cy) {
 			SPADES_MARK_FUNCTION();
 			Vector3 eye = renderer->renderer->GetSceneDef().viewOrigin;
 
@@ -374,15 +370,12 @@ namespace spades {
 
 			Vector3 diff = eye - centerPos;
 			float sx = 0.f, sy = 0.f;
+
 			// FIXME: variable map size?
-			if (diff.x > 256.f)
-				sx += 512.f;
-			if (diff.y > 256.f)
-				sy += 512.f;
-			if (diff.x < -256.f)
-				sx -= 512.f;
-			if (diff.y < -256.f)
-				sy -= 512.f;
+			sx += 512.f * (cx / 32);
+			sy += 512.f * (cy / 32);
+			sx += -512.f * (cx < 0);
+			sy += -512.f * (cy < 0);
 
 			bx.min.x += sx;
 			bx.min.y += sy;
@@ -437,7 +430,7 @@ namespace spades {
 			device->BindBuffer(IGLDevice::ElementArrayBuffer, 0);
 		}
 
-		void GLMapChunk::RenderDLightPass(std::vector<GLDynamicLight> lights) {
+		void GLMapChunk::RenderDLightPass(std::vector<GLDynamicLight> lights, int cx, int cy) {
 			SPADES_MARK_FUNCTION();
 			Vector3 eye = renderer->renderer->GetSceneDef().viewOrigin;
 
@@ -455,15 +448,12 @@ namespace spades {
 
 			Vector3 diff = eye - centerPos;
 			float sx = 0.f, sy = 0.f;
+
 			// FIXME: variable map size?
-			if (diff.x > 256.f)
-				sx += 512.f;
-			if (diff.y > 256.f)
-				sy += 512.f;
-			if (diff.x < -256.f)
-				sx -= 512.f;
-			if (diff.y < -256.f)
-				sy -= 512.f;
+			sx += 512.f * (cx / 32);
+			sy += 512.f * (cy / 32);
+			sx += -512.f * (cx < 0);
+			sy += -512.f * (cy < 0);
 
 			bx.min.x += sx;
 			bx.min.y += sy;
