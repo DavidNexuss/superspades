@@ -315,6 +315,7 @@ namespace spades {
 		}
 
 		bool GLMapChunk::IsOccluded() {
+			return false;
 			// FIXME: Variable map size
 			if (chunkX == 0 || chunkY == 0 || chunkZ == 0 || chunkX == (32 - 1) ||
 			    chunkY == (32 - 1) || chunkZ == (32 - 1))
