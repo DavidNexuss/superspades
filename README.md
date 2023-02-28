@@ -16,6 +16,11 @@ Demo video: https://www.youtube.com/watch?v=cEGUr-1cwWg
 * **voxel_renderdistance**: World render distance (256 by deafault)
 * **cg_keyMedkit**: keybinding to issue medkit command (q by deafault)
 
+## Linux building
+
+Linux building steps have been automated with the script linuxMake.sh which will compile automatically everything and generate an also generate an AppImage. Just issue ./linuxMake.sh after cloning the repo
+You can also target Windows and compile from a unix system using MinGW, the script windowMake.sh will generate a Makefile to create the binary using mingw chain.
+
 Everything else was made by yyt and the community of openspades:
 https://github.com/yvt/openspades
 
